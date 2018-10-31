@@ -36,6 +36,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
 RUN composer global require --optimize-autoloader \
     "hirak/prestissimo"
 
+# Install wp-browser globally
+RUN composer global require lucatume/wp-browser:^2.1
+
+# Add composer global binaries to PATH
+RUN echo "PATH=\$PATH:$(composer global config bin-dir --absolute)" >> ~/.bashrc
+
 # Set up config
 ENV WP_ROOT_FOLDER="."
 ENV WP_URL="http://localhost"
@@ -47,15 +53,13 @@ ENV ADMIN_PASSWORD="password"
 
 # Set up wp-browser / codeception
 WORKDIR /var/www/html
-COPY    composer.json composer.json
 COPY    codeception.dist.yml codeception.dist.yml
-RUN     composer install --no-progress
 
 # Install WordPress
-RUN vendor/bin/wp core download --allow-root
+RUN wp core download --allow-root
 
 # Create WordPress wp-config
-RUN vendor/bin/wp config create \
+RUN wp config create \
     --dbname="$DB_NAME" \
     --dbuser="$DB_USER" \
     --dbpass="$DB_PASSWORD" \

@@ -4,8 +4,8 @@
 service apache2 start
 
 # Install WP if not yet installed
-if ! $( ./vendor/bin/wp core is-installed --allow-root ); then
-    ./vendor/bin/wp core install \
+if ! $( wp core is-installed --allow-root ); then
+    wp core install \
 		--url=$WP_URL \
 		--title='Test' \
 		--admin_user=$ADMIN_USERNAME \
