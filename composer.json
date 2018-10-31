@@ -1,0 +1,13 @@
+{
+    "name": "wpengine/codeception",
+    "description": "Codeception Testing Library",
+    "license": "proprietary",
+    "authors": [{
+        "name": "Ryan Hoover",
+        "email": "ryan.hoover@wpengine.com",
+        "role": "Architect"
+    }],
+    "require": {
+        "lucatume/wp-browser": "^2.1"
+    }
+}
