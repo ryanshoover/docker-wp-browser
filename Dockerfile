@@ -40,7 +40,7 @@ RUN composer global require --optimize-autoloader \
 RUN composer global require lucatume/wp-browser:^2.1
 
 # Add composer global binaries to PATH
-RUN echo "PATH=\$PATH:$(composer global config bin-dir --absolute)" >> ~/.bashrc
+RUN echo "export PATH=~/.composer/vendor/bin:$PATH" >> ~/.bashrc
 
 # Set up config
 ENV WP_ROOT_FOLDER="."
@@ -70,8 +70,8 @@ RUN wp config create \
 
 # Set up Apache
 COPY config/project.conf /etc/apache2/sites-available/project.conf
-RUN a2ensite project
-RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+RUN  a2ensite project
+RUN  echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 # CircleCI Compatibility
 # LABEL com.circleci.preserve-entrypoint=true
