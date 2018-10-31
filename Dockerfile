@@ -52,8 +52,8 @@ ENV ADMIN_USERNAME="admin"
 ENV ADMIN_PASSWORD="password"
 
 # Set up wp-browser / codeception
-WORKDIR /var/www/html
-COPY    codeception.dist.yml codeception.dist.yml
+WORKDIR /root/project
+COPY    config/codeception.dist.yml codeception.dist.yml
 
 # Install WordPress
 RUN wp core download --allow-root
@@ -69,6 +69,8 @@ RUN wp config create \
     --allow-root
 
 # Set up Apache
+COPY config/project.conf /etc/apache2/sites-available/project.conf
+RUN a2ensite project
 RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 # CircleCI Compatibility
