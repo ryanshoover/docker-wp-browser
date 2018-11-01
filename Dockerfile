@@ -44,7 +44,7 @@ RUN composer global require lucatume/wp-browser:^2.1
 # Add composer global binaries to PATH
 ENV PATH "$PATH:~/.composer/vendor/bin"
 
-# Set up config
+# Set up WordPress config
 ENV WP_ROOT_FOLDER="."
 ENV WP_URL="http://localhost"
 ENV WP_DOMAIN="locahost"
@@ -54,7 +54,7 @@ ENV ADMIN_USERNAME="admin"
 ENV ADMIN_PASSWORD="password"
 
 # Set up wp-browser / codeception
-WORKDIR /root/project
+WORKDIR /root/config
 COPY    config/codeception.dist.yml codeception.dist.yml
 
 # Set up Apache
@@ -67,6 +67,7 @@ RUN  service apache2 start
 # LABEL com.circleci.preserve-entrypoint=true
 
 # Set up entrypoint
+WORKDIR    /root/project
 COPY       entrypoint.sh /entrypoint.sh
 RUN        chmod 755 /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

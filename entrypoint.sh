@@ -3,6 +3,11 @@
 # Ensure Apache is running
 service apache2 start
 
+# Link codeception config if not yet linked
+if ! $( ls codeception.dist.yml ); then
+	ln -s ../config/codeception.dist.yml ./codeception.dist.yml
+fi
+
 # Download WordPress if not yet downloaded
 if ! $( wp core version --allow-root ); then
 	wp core download --skip-content --quiet --allow-root
