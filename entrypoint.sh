@@ -3,6 +3,23 @@
 # Ensure Apache is running
 service apache2 start
 
+# Download WordPress if not yet downloaded
+if ! $( wp core version --allow-root ); then
+	wp core download --skip-content --quiet --allow-root
+fi
+
+# Config WordPress if not yet config'd
+if ! $( wp config path --allow-root ); then
+	wp config create \
+		--dbname="$DB_NAME" \
+		--dbuser="$DB_USER" \
+		--dbpass="$DB_PASSWORD" \
+		--dbhost="$DB_HOST" \
+		--dbprefix="$WP_TABLE_PREFIX" \
+		--skip-check \
+		--allow-root
+fi
+
 # Install WP if not yet installed
 if ! $( wp core is-installed --allow-root ); then
     wp core install \

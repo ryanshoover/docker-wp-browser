@@ -57,19 +57,6 @@ ENV ADMIN_PASSWORD="password"
 WORKDIR /root/project
 COPY    config/codeception.dist.yml codeception.dist.yml
 
-# Install WordPress
-RUN wp core download --allow-root
-
-# Create WordPress wp-config
-RUN wp config create \
-    --dbname="$DB_NAME" \
-    --dbuser="$DB_USER" \
-    --dbpass="$DB_PASSWORD" \
-    --dbhost="$DB_HOST" \
-    --dbprefix="$WP_TABLE_PREFIX" \
-    --skip-check \
-    --allow-root
-
 # Set up Apache
 COPY config/project.conf /etc/apache2/sites-available/project.conf
 RUN  a2ensite project
