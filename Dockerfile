@@ -47,27 +47,21 @@ ENV PATH "$PATH:~/.composer/vendor/bin"
 # Set up WordPress config
 ENV WP_ROOT_FOLDER="."
 ENV WP_URL="http://localhost"
-ENV WP_DOMAIN="locahost"
+ENV WP_DOMAIN="localhost"
 ENV WP_TABLE_PREFIX="wp_"
-ENV ADMIN_EMAIL="admin@wp.local"
+ENV ADMIN_EMAIL="admin@wordpress.local"
 ENV ADMIN_USERNAME="admin"
 ENV ADMIN_PASSWORD="password"
 
 # Set up wp-browser / codeception
-WORKDIR /root/config
+WORKDIR /var/www/config
 COPY    config/codeception.dist.yml codeception.dist.yml
 
 # Set up Apache
-COPY config/project.conf /etc/apache2/sites-available/project.conf
-RUN  a2ensite project
 RUN  echo 'ServerName localhost' >> /etc/apache2/apache2.conf
-RUN  service apache2 start
-
-# CircleCI Compatibility
-# LABEL com.circleci.preserve-entrypoint=true
 
 # Set up entrypoint
-WORKDIR    /root/project
+WORKDIR    /var/www/html
 COPY       entrypoint.sh /entrypoint.sh
 RUN        chmod 755 /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
