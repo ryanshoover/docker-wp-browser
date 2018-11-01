@@ -22,7 +22,7 @@ wp config create \
 	--dbhost="$DB_HOST" \
 	--dbprefix="$WP_TABLE_PREFIX" \
 	--skip-check \
-	--quiet
+	--quiet \
 	--allow-root
 
 
