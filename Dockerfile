@@ -1,5 +1,7 @@
 FROM php:7.2-apache-stretch
 
+SHELL [ "/bin/bash", "-c" ]
+
 # Install required system packages
 RUN apt-get update && \
     apt-get -y install \
@@ -40,7 +42,7 @@ RUN composer global require --optimize-autoloader \
 RUN composer global require lucatume/wp-browser:^2.1
 
 # Add composer global binaries to PATH
-RUN echo "export PATH=~/.composer/vendor/bin:$PATH" >> ~/.bashrc
+ENV PATH "$PATH:~/.composer/vendor/bin"
 
 # Set up config
 ENV WP_ROOT_FOLDER="."
@@ -72,6 +74,7 @@ RUN wp config create \
 COPY config/project.conf /etc/apache2/sites-available/project.conf
 RUN  a2ensite project
 RUN  echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+RUN  service apache2 start
 
 # CircleCI Compatibility
 # LABEL com.circleci.preserve-entrypoint=true
