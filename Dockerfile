@@ -39,7 +39,7 @@ RUN composer global require --optimize-autoloader \
     "hirak/prestissimo"
 
 # Install wp-browser globally
-RUN composer global require lucatume/wp-browser:^2.1 league/factory-muffin:^3.0
+RUN composer global require lucatume/wp-browser:^2.1 league/factory-muffin:^3.0 league/factory-muffin-faker:^2.0
 
 # Add composer global binaries to PATH
 ENV PATH "$PATH:~/.composer/vendor/bin"
