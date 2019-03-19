@@ -5,10 +5,6 @@ paths:
     data: tests/_data
     helpers: tests/_support
     envs: tests/_envs
-settings:
-    bootstrap: _bootstrap.php
-    colors: true
-    memory_limit: 1024M
 params:
     - env # Load parameters from environment variables
 extensions:
