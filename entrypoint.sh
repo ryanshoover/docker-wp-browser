@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Ensure mysql is loaded
+dockerize -wait tcp://$DB_HOST:3306 -timeout 1m
+
 # Ensure Apache is running
 service apache2 start
 

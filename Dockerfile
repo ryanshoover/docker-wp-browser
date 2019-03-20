@@ -13,7 +13,8 @@ RUN apt-get update && \
     git \
     ssh \
     tar \
-    gzip
+    gzip \
+    wget
 
 # Install php extensions
 RUN docker-php-ext-install \
@@ -26,6 +27,13 @@ RUN docker-php-ext-install \
 
 # Configure php
 RUN echo "date.timezone = UTC" >> /usr/local/etc/php/php.ini
+
+# Install Dockerize
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
 
 # Install composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -48,7 +56,7 @@ RUN composer global require \
 ENV PATH "$PATH:~/.composer/vendor/bin"
 
 # Set up WordPress config
-ENV WP_ROOT_FOLDER="."
+ENV WP_ROOT_FOLDER="/var/www/html"
 ENV WP_URL="http://localhost"
 ENV WP_DOMAIN="localhost"
 ENV WP_TABLE_PREFIX="wp_"
