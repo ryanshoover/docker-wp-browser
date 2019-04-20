@@ -43,5 +43,7 @@ if ! $( wp core is-installed --allow-root ); then
 		--allow-root
 fi
 
+wp db export wp-content/mysql.sql --allow-root
+
 # Run the passed command
 exec "$@"

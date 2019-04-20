@@ -1,10 +1,10 @@
 actor: Tester
 paths:
-    tests: tests
-    log: tests/_output
-    data: tests/_data
+    tests:   tests
+    log:     tests/_output
+    data:    tests/_data
     helpers: tests/_support
-    envs: tests/_envs
+    envs:    tests/_envs
 params:
     - env # Load parameters from environment variables
 extensions:
@@ -16,3 +16,32 @@ extensions:
         - 'Codeception\Command\GenerateWPAjax'
         - 'Codeception\Command\GenerateWPCanonical'
         - 'Codeception\Command\GenerateWPXMLRPC'
+
+modules:
+    config:
+        WPDb:
+            dsn:                 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+            user:                '%DB_USER%'
+            password:            '%DB_PASSWORD%'
+            populator:           'mysql -u $user -p$password -h $host $dbname < $dump'
+            dump:                'wp-content/mysql.sql'
+            populate:            true
+            cleanup:             true
+            url:                 '%WP_URL%'
+            urlReplacement:      true
+            tablePrefix:         '%WP_TABLE_PREFIX%'
+        WPBrowser:
+            url:                 'http://localhost'
+            wpRootFolder:        '%WP_ROOT_FOLDER%'
+            adminUsername:       '%ADMIN_USERNAME%'
+            adminPassword:       '%ADMIN_PASSWORD%'
+            adminPath:           '/wp-admin'
+        WPLoader:
+            wpRootFolder: "%WP_ROOT_FOLDER%"
+            dbName: "%DB_NAME%"
+            dbHost: "%DB_HOST%"
+            dbUser: "%DB_USER%"
+            dbPassword: "%DB_PASSWORD%"
+            tablePrefix: "%WP_TABLE_PREFIX%"
+            domain: "%WP_DOMAIN%"
+            adminEmail: "%ADMIN_EMAIL%"
