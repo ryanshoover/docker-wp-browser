@@ -8,7 +8,7 @@ service apache2 start
 
 # Link codeception config if not yet linked
 if [ ! -e codeception.dist.yml ]; then
-	ln -s /var/www/config/codeception.dist.yml ./codeception.dist.yml
+	ln -s /var/www/config/codeception.dist.yml /var/www/html/codeception.dist.yml
 fi
 
 # Download WordPress
@@ -43,7 +43,9 @@ if ! $( wp core is-installed --allow-root ); then
 		--allow-root
 fi
 
-wp db export wp-content/mysql.sql --allow-root
+wp db export \
+	/var/www/html/wp-content/mysql.sql \
+	--allow-root
 
 # Run the passed command
 exec "$@"
