@@ -14,7 +14,6 @@ fi
 # Download WordPress
 wp core download \
 	--path=/var/www/html \
-	--skip-content \
 	--quiet \
 	--allow-root
 
@@ -30,7 +29,6 @@ wp config create \
 	--quiet \
 	--allow-root
 
-
 # Install WP if not yet installed
 if ! $( wp core is-installed --allow-root ); then
 	wp core install \
@@ -42,6 +40,8 @@ if ! $( wp core is-installed --allow-root ); then
 		--admin_email=$ADMIN_EMAIL \
 		--allow-root
 fi
+
+mkdir -p /var/www/html/wp-content
 
 wp db export \
 	/var/www/html/wp-content/mysql.sql \

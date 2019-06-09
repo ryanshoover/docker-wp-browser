@@ -48,7 +48,7 @@ RUN composer global require --optimize-autoloader \
 
 # Install wp-browser globally
 RUN composer global require \
-    lucatume/wp-browser:^2.2.1 \
+    lucatume/wp-browser:^2.2 \
     league/factory-muffin:^3.0 \
     league/factory-muffin-faker:^2.0
 
