@@ -1,19 +1,24 @@
-FROM php:7.2-apache-stretch
+FROM robcherry/docker-chromedriver
+
+# FROM  php:7.2-apache-stretch
 
 SHELL [ "/bin/bash", "-c" ]
 
-# Install required system packages
-RUN apt-get update && \
+RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org jessie/updates main" > /etc/apt/sources.list
+
+# Install Libraries for Chrome & WordPress
+RUN apt-get -y update && \
     apt-get -y install \
     # WordPress dependencies
     libjpeg-dev \
     libpng-dev \
     mysql-client \
-    # CircleCI depedencies
     git \
     ssh \
     tar \
     gzip \
+    zip \
+    unzip \
     wget
 
 # Install php extensions
@@ -33,7 +38,6 @@ ENV DOCKERIZE_VERSION v0.6.1
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-
 
 # Install composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -65,11 +69,11 @@ ENV ADMIN_USERNAME="admin"
 ENV ADMIN_PASSWORD="password"
 
 # Set up wp-browser / codeception
-WORKDIR /var/www/config
-COPY    config/codeception.dist.yml codeception.dist.yml
+WORKDIR    /var/www/config
+COPY       config/codeception.dist.yml codeception.dist.yml
 
 # Set up Apache
-RUN  echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+RUN        echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 # Set up entrypoint
 WORKDIR    /var/www/html
