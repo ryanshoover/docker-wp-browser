@@ -6,7 +6,7 @@ SHELL [ "/bin/bash", "-c" ]
 
 RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org jessie/updates main" > /etc/apt/sources.list
 
-# Install Libraries for Chrome & WordPress
+# Install Libraries for Chrome, PHP & WordPress
 RUN apt-get -y update && \
     apt-get -y install \
     # WordPress dependencies
@@ -16,22 +16,37 @@ RUN apt-get -y update && \
     git \
     ssh \
     tar \
-    gzip \
     zip \
     unzip \
-    wget
+    wget \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
 
-# Install php extensions
-RUN docker-php-ext-install \
-    bcmath \
-    zip \
-    gd \
-    pdo_mysql \
-    mysqli \
-    opcache
+RUN curl -fsSL https://packages.sury.org/php/apt.gpg | apt-key add -
+
+RUN add-apt-repository "deb https://packages.sury.org/php/ $(lsb_release -cs) main"
+
+RUN apt-get -y update && \
+    apt-get -y install \
+    apache2 \
+    php7.3-common \
+    php7.3-cli \
+    php-pear \
+    libapache2-mod-php \
+    php7.3-curl \
+    php7.3-bcmath \
+    php7.3-zip \
+    php7.3-gd \
+    php7.3-mysqli \
+    php7.3-mbstring
+
+# Clean up packages
+RUN apt-get -y autoremove
 
 # Configure php
-RUN echo "date.timezone = UTC" >> /usr/local/etc/php/php.ini
+# RUN echo "date.timezone = UTC" >> /usr/local/etc/php/php.ini
 
 # Install Dockerize
 ENV DOCKERIZE_VERSION v0.6.1
