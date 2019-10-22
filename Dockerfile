@@ -69,7 +69,8 @@ WORKDIR /var/www/config
 COPY    config/codeception.dist.yml codeception.dist.yml
 
 # Set up Apache
-RUN  echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+RUN a2enmod rewrite
 
 # Set up entrypoint
 WORKDIR    /var/www/html
