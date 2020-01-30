@@ -41,6 +41,9 @@ if ! $( wp core is-installed --allow-root ); then
 		--allow-root
 fi
 
+# Ensure a .env file is present for those who use .env params in codeception tests
+touch /var/www/html/.env
+
 mkdir -p /var/www/html/wp-content
 
 wp db export \
