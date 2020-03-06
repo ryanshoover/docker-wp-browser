@@ -48,7 +48,7 @@ mkdir -p /var/www/html/wp-content
 
 wp db export \
 	/var/www/html/wp-content/mysql.sql \
-	--allow-root
+	--allow-root --skip-themes --skip-plugins
 
 # Run the passed command
 exec "$@"
