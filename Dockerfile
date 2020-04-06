@@ -1,58 +1,37 @@
-FROM robcherry/docker-chromedriver
+FROM php:apache-buster
 
-# FROM  php:7.2-apache-stretch
-
-SHELL [ "/bin/bash", "-c" ]
-
-RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org jessie/updates main" > /etc/apt/sources.list
-
-# Install Libraries for Chrome, PHP & WordPress
-RUN apt-get -y update && \
+# Install required system packages
+RUN apt-get update && \
     apt-get -y install \
-    # WordPress dependencies
+    default-mysql-client \
     libjpeg-dev \
     libpng-dev \
-    mysql-client \
-    git \
-    ssh \
-    tar \
+    libzip-dev \
     zip \
-    unzip \
+    gzip \
+    tar \
+    ssh \
     wget \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
+    git
 
-RUN curl -fsSL https://packages.sury.org/php/apt.gpg | apt-key add -
-
-RUN add-apt-repository "deb https://packages.sury.org/php/ $(lsb_release -cs) main"
-
-RUN apt-get -y update && \
-    apt-get -y install \
-    apache2 \
-    php7.3-common \
-    php7.3-cli \
-    php-pear \
-    libapache2-mod-php \
-    php7.3-curl \
-    php7.3-bcmath \
-    php7.3-zip \
-    php7.3-gd \
-    php7.3-mysqli \
-    php7.3-mbstring
-
-# Clean up packages
-RUN apt-get -y autoremove
+# Install php extensions
+RUN docker-php-ext-install \
+    bcmath \
+    zip \
+    gd \
+    pdo_mysql \
+    mysqli \
+    opcache
 
 # Configure php
-# RUN echo "date.timezone = UTC" >> /usr/local/etc/php/php.ini
+RUN echo "date.timezone = UTC" >> /usr/local/etc/php/php.ini
 
 # Install Dockerize
 ENV DOCKERIZE_VERSION v0.6.1
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
 
 # Install composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -67,32 +46,37 @@ RUN composer global require --optimize-autoloader \
 
 # Install wp-browser globally
 RUN composer global require \
-    lucatume/wp-browser:^2.2 \
-    league/factory-muffin:^3.0 \
-    league/factory-muffin-faker:^2.0
+    lucatume/wp-browser \
+    league/factory-muffin \
+    league/factory-muffin-faker
 
 # Add composer global binaries to PATH
 ENV PATH "$PATH:~/.composer/vendor/bin"
 
 # Set up WordPress config
-ENV WP_ROOT_FOLDER="/var/www/html"
-ENV WP_URL="http://localhost"
-ENV WP_DOMAIN="localhost"
-ENV WP_TABLE_PREFIX="wp_"
-ENV ADMIN_EMAIL="admin@wordpress.local"
-ENV ADMIN_USERNAME="admin"
-ENV ADMIN_PASSWORD="password"
-
-# Set up wp-browser / codeception
-WORKDIR    /var/www/config
-COPY       config/codeception.dist.yml codeception.dist.yml
+ENV WORDPRESS_DB_HOST="mysql"
+ENV WORDPRESS_DB_USER="wordpress"
+ENV WORDPRESS_DB_PASSWORD="wordpress"
+ENV WORDPRESS_DB_NAME="wordpress"
+ENV WORDPRESS_DB_CHARSET="utf8"
+ENV WORDPRESS_ROOT_FOLDER="/var/www/html"
+ENV WORDPRESS_DOMAIN="localhost"
+ENV WORDPRESS_URL="http://localhost"
+ENV WORDPRESS_TABLE_PREFIX="wp_"
+ENV WORDPRESS_ADMIN_EMAIL="admin@wp.local"
+ENV WORDPRESS_ADMIN_USERNAME="admin"
+ENV WORDPRESS_ADMIN_PASSWORD="password"
 
 # Set up Apache
 RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 RUN a2enmod rewrite
 
+# Set up our entrypoint
+COPY entrypoint.sh /usr/local/bin/
+
+# Set up our Codeception config
+COPY config/codeception.dist.yml /var/www/html
+
 # Set up entrypoint
 WORKDIR    /var/www/html
-COPY       entrypoint.sh /entrypoint.sh
-RUN        chmod 755 /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]

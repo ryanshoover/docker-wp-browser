@@ -1,54 +1,66 @@
 #!/bin/bash
 
 # Ensure mysql is loaded
-dockerize -wait tcp://$DB_HOST:3306 -timeout 1m
+dockerize -wait tcp://$WORDPRESS_DB_HOST:3306 -timeout 1m
 
 # Ensure Apache is running
 service apache2 start
 
-# Link codeception config if not yet linked
-if [ ! -e codeception.dist.yml ]; then
-	ln -s /var/www/config/codeception.dist.yml /var/www/html/codeception.dist.yml
+# If codeception.yml is a directory, remove it
+# This can sometimes happen in odd docker states
+if [ -d codeception.yml ]; then
+	rm -rf codeception.yml
 fi
+
+# Update our domain to just be the docker container's IP address
+export WORDPRESS_DOMAIN=$( hostname -i )
+export WORDPRESS_URL="http://$WORDPRESS_DOMAIN"
 
 # Download WordPress
 wp core download \
-	--path=/var/www/html \
 	--quiet \
+	--skip-content \
 	--allow-root
 
 # Config WordPress
 wp config create \
-	--path=/var/www/html \
-	--dbname="$DB_NAME" \
-	--dbuser="$DB_USER" \
-	--dbpass="$DB_PASSWORD" \
-	--dbhost="$DB_HOST" \
-	--dbprefix="$WP_TABLE_PREFIX" \
+	--dbname="$WORDPRESS_DB_NAME" \
+	--dbuser="$WORDPRESS_DB_USER" \
+	--dbpass="$WORDPRESS_DB_PASSWORD" \
+	--dbhost="$WORDPRESS_DB_HOST" \
+	--dbprefix="$WORDPRESS_TABLE_PREFIX" \
+	--dbcharset="$WORDPRESS_DB_CHARSET" \
 	--skip-check \
 	--quiet \
 	--allow-root
 
+chown www-data:www-data wp-config.php
+
 # Install WP if not yet installed
 if ! $( wp core is-installed --allow-root ); then
 	wp core install \
-		--path=/var/www/html \
-		--url=$WP_URL \
+		--url=$WORDPRESS_URL \
 		--title='Test' \
-		--admin_user=$ADMIN_USERNAME \
-		--admin_password=$ADMIN_PASSWORD \
-		--admin_email=$ADMIN_EMAIL \
+		--admin_user=$WORDPRESS_ADMIN_USERNAME \
+		--admin_password=$WORDPRESS_ADMIN_PASSWORD \
+		--admin_email=$WORDPRESS_ADMIN_EMAIL \
 		--allow-root
 fi
 
 # Ensure a .env file is present for those who use .env params in codeception tests
-touch /var/www/html/.env
+touch .env
+chown www-data:www-data .env
 
-mkdir -p /var/www/html/wp-content
+# Export a database dump
+mkdir -p wp-content
+chown www-data:www-data wp-content
 
-wp db export \
-	/var/www/html/wp-content/mysql.sql \
+wp db export wp-content/mysql.sql \
+	--skip-plugins \
+	--skip-themes \
 	--allow-root
+
+chown www-data:www-data wp-content/mysql.sql
 
 # Run the passed command
 exec "$@"
