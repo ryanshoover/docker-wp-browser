@@ -1,4 +1,4 @@
-FROM php:7.2-apache-stretch
+FROM php:7.3.16-apache-stretch
 
 SHELL [ "/bin/bash", "-c" ]
 
