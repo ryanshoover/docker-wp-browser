@@ -3,16 +3,16 @@ FROM php:apache-buster
 # Install required system packages
 RUN apt-get update && \
     apt-get -y install \
-    default-mysql-client \
     libjpeg-dev \
     libpng-dev \
     libzip-dev \
+    default-mysql-client \
+    git \
+    ssh \
+    tar \
     zip \
     gzip \
-    tar \
-    ssh \
-    wget \
-    git
+    wget
 
 # Install php extensions
 RUN docker-php-ext-install \
