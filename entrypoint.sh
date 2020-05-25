@@ -6,8 +6,6 @@ dockerize -wait tcp://$WORDPRESS_DB_HOST:3306 -timeout 1m
 # Ensure Apache is running
 service apache2 start
 
-# If codeception.yml is a directory, remove it
-# This can sometimes happen in odd docker states
 if [ -d codeception.yml ]; then
 	rm -rf codeception.yml
 fi
@@ -19,7 +17,6 @@ export WORDPRESS_URL="http://$WORDPRESS_DOMAIN"
 # Download WordPress
 wp core download \
 	--quiet \
-	--skip-content \
 	--allow-root
 
 # Config WordPress
@@ -35,6 +32,9 @@ wp config create \
 	--allow-root
 
 chown www-data:www-data wp-config.php
+
+# Wipe out our database for good measure.
+wp db clean --yes --allow-root
 
 # Install WP if not yet installed
 if ! $( wp core is-installed --allow-root ); then
@@ -53,7 +53,13 @@ chown www-data:www-data .env
 
 # Export a database dump
 mkdir -p wp-content
+mkdir -p wp-content/mu-plugins
+mkdir -p wp-content/plugins
+mkdir -p wp-content/themes
 chown www-data:www-data wp-content
+chown www-data:www-data wp-content/mu-plugins
+chown www-data:www-data wp-content/plugins
+chown www-data:www-data wp-content/themes
 
 wp db export wp-content/mysql.sql \
 	--skip-plugins \

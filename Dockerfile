@@ -3,16 +3,17 @@ FROM php:apache-buster
 # Install required system packages
 RUN apt-get update && \
     apt-get -y install \
+    default-mysql-client \
     libjpeg-dev \
     libpng-dev \
     libzip-dev \
-    default-mysql-client \
-    git \
-    ssh \
-    tar \
     zip \
     gzip \
-    wget
+    tar \
+    ssh \
+    wget \
+    git \
+    jq
 
 # Install php extensions
 RUN docker-php-ext-install \
@@ -46,7 +47,20 @@ RUN composer global require --optimize-autoloader \
 
 # Install wp-browser globally
 RUN composer global require \
+    codeception/codeception \
+    codeception/module-asserts \
+    codeception/module-db \
+    codeception/module-webdriver \
+    codeception/module-phpbrowser \
+    codeception/module-cli \
+    codeception/module-rest \
+    codeception/util-universalframework \
+    codeception/module-filesystem \
+    codeception/specify \
+    codeception/verify \
     lucatume/wp-browser \
+    hoa/console \
+    vlucas/phpdotenv \
     league/factory-muffin \
     league/factory-muffin-faker
 
@@ -74,8 +88,8 @@ RUN a2enmod rewrite
 # Set up our entrypoint
 COPY entrypoint.sh /usr/local/bin/
 
-# Set up our Codeception config
-COPY config/codeception.dist.yml /var/www/html
+# Copy Codeception configs
+COPY codeception.*.yml /var/www/html/
 
 # Set up entrypoint
 WORKDIR    /var/www/html
