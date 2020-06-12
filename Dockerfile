@@ -91,7 +91,7 @@ RUN a2enmod rewrite
 COPY entrypoint.sh /usr/local/bin/
 
 # Copy Codeception configs
-COPY codeception.*.yml /var/www/html/
+COPY config/codeception.*.yml /var/www/html/
 
 # Set up entrypoint
 WORKDIR    /var/www/html
