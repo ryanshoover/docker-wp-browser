@@ -49,6 +49,7 @@ RUN composer global require --optimize-autoloader \
 
 # Install wp-browser globally
 RUN composer global require \
+    wp-cli/wp-cli-bundle \
     codeception/codeception \
     codeception/module-asserts \
     codeception/module-db \
