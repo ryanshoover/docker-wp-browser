@@ -15,7 +15,8 @@ RUN apt-get update && \
     git \
     jq \
     nodejs \
-    npm
+    npm \
+    yarn
 
 # Install php extensions
 RUN docker-php-ext-install \
