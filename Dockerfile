@@ -1,20 +1,19 @@
-FROM php:7.3.18-apache-stretch
-
-SHELL [ "/bin/bash", "-c" ]
+FROM php:apache-buster
 
 # Install required system packages
 RUN apt-get update && \
     apt-get -y install \
-    # WordPress dependencies
+    default-mysql-client \
     libjpeg-dev \
     libpng-dev \
-    mysql-client \
-    # CircleCI depedencies
-    git \
-    ssh \
-    tar \
+    libzip-dev \
+    zip \
     gzip \
-    wget
+    tar \
+    ssh \
+    wget \
+    git \
+    jq
 
 # Install php extensions
 RUN docker-php-ext-install \
@@ -48,32 +47,50 @@ RUN composer global require --optimize-autoloader \
 
 # Install wp-browser globally
 RUN composer global require \
-    lucatume/wp-browser:^2.2 \
-    league/factory-muffin:^3.0 \
-    league/factory-muffin-faker:^2.0
+    codeception/codeception \
+    codeception/module-asserts \
+    codeception/module-db \
+    codeception/module-webdriver \
+    codeception/module-phpbrowser \
+    codeception/module-cli \
+    codeception/module-rest \
+    codeception/util-universalframework \
+    codeception/module-filesystem \
+    codeception/specify \
+    codeception/verify \
+    lucatume/wp-browser \
+    hoa/console \
+    vlucas/phpdotenv \
+    league/factory-muffin \
+    league/factory-muffin-faker
 
 # Add composer global binaries to PATH
 ENV PATH "$PATH:~/.composer/vendor/bin"
 
 # Set up WordPress config
-ENV WP_ROOT_FOLDER="/var/www/html"
-ENV WP_URL="http://localhost"
-ENV WP_DOMAIN="localhost"
-ENV WP_TABLE_PREFIX="wp_"
-ENV ADMIN_EMAIL="admin@wordpress.local"
-ENV ADMIN_USERNAME="admin"
-ENV ADMIN_PASSWORD="password"
-
-# Set up wp-browser / codeception
-WORKDIR /var/www/config
-COPY    config/codeception.dist.yml codeception.dist.yml
+ENV WORDPRESS_DB_HOST="mysql"
+ENV WORDPRESS_DB_USER="wordpress"
+ENV WORDPRESS_DB_PASSWORD="wordpress"
+ENV WORDPRESS_DB_NAME="wordpress"
+ENV WORDPRESS_DB_CHARSET="utf8"
+ENV WORDPRESS_ROOT_FOLDER="/var/www/html"
+ENV WORDPRESS_DOMAIN="localhost"
+ENV WORDPRESS_URL="http://localhost"
+ENV WORDPRESS_TABLE_PREFIX="wp_"
+ENV WORDPRESS_ADMIN_EMAIL="admin@wp.local"
+ENV WORDPRESS_ADMIN_USERNAME="admin"
+ENV WORDPRESS_ADMIN_PASSWORD="password"
 
 # Set up Apache
 RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 RUN a2enmod rewrite
 
+# Set up our entrypoint
+COPY entrypoint.sh /usr/local/bin/
+
+# Copy Codeception configs
+COPY codeception.*.yml /var/www/html/
+
 # Set up entrypoint
 WORKDIR    /var/www/html
-COPY       entrypoint.sh /entrypoint.sh
-RUN        chmod 755 /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
