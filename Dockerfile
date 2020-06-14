@@ -58,9 +58,6 @@ RUN composer global require --optimize-autoloader \
     league/factory-muffin \
     league/factory-muffin-faker
 
-# Add composer global binaries to PATH
-ENV PATH "$PATH:~/.composer/vendor/bin"
-
 # Set up WordPress config
 ENV WORDPRESS_DB_HOST="mysql"
 ENV WORDPRESS_DB_USER="wordpress"

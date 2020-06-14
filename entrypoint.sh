@@ -3,6 +3,8 @@
 # Ensure Apache is running
 service apache2 start
 
+export PATH=~/.composer/vendor/bin:$PATH
+
 if [ -d codeception.yml ]; then
 	rm -rf codeception.yml
 fi
