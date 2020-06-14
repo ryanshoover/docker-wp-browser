@@ -3,6 +3,9 @@
 # Ensure Apache is running
 service apache2 start
 
+# Ensure mysql is loaded	
+dockerize -wait tcp://$WORDPRESS_DB_HOST:3306 -timeout 1m
+
 export PATH=~/.composer/vendor/bin:$PATH
 
 if [ -d codeception.yml ]; then
