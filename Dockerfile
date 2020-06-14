@@ -44,27 +44,17 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
     --filename=composer \
     --install-dir=/usr/local/bin
 
-# Install tool to speed up composer installations
-RUN composer global require --optimize-autoloader \
-    "hirak/prestissimo"
-
 # Install wp-browser globally
-RUN composer global require \
-    wp-cli/wp-cli-bundle \
-    codeception/codeception \
-    codeception/module-asserts \
-    codeception/module-db \
-    codeception/module-webdriver \
-    codeception/module-phpbrowser \
-    codeception/module-cli \
-    codeception/module-rest \
-    codeception/util-universalframework \
-    codeception/module-filesystem \
-    codeception/specify \
-    codeception/verify \
+RUN composer global require --optimize-autoloader \
     lucatume/wp-browser \
-    hoa/console \
-    vlucas/phpdotenv \
+    codeception/module-asserts \
+    codeception/module-cli \
+    codeception/module-db \
+    codeception/module-filesystem \
+    codeception/module-phpbrowser \
+    codeception/module-rest \
+    codeception/module-webdriver \
+    codeception/util-universalframework \
     league/factory-muffin \
     league/factory-muffin-faker
 
