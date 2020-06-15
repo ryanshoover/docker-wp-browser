@@ -1,7 +1,7 @@
 FROM php:apache-buster
 
 # Enable yarn installation
-RUN apt-get -y install gnupg2
+RUN apt-get update && apt-get -y install gnupg2
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
